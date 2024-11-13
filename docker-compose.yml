@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: gunicorn djangoCoolify.wsgi:application --bind 0.0.0.0:8000
+    depends_on:
+      - db
+    environment:
+      - DEBUG=${DEBUG:-False}
+      - SECRET_KEY=${SERVICE_PASSWORD_SECRET_KEY}
+      - DATABASE_NAME=${DATABASE_NAME:-postgres}
+      - DATABASE_USER=${DATABASE_USER:-postgres}
+      - DATABASE_PASSWORD=${SERVICE_PASSWORD_DB}
+      - DATABASE_HOST=${DATABASE_HOST:-db}
+      - DATABASE_PORT=${DATABASE_PORT:-5432}
+      - SERVICE_FQDN_WEB=/
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.web.rule=Host(`${SERVICE_FQDN_WEB}`) && PathPrefix(`/`)"
+      - traefik.http.routers.web.entryPoints=http
+      - traefik.http.services.web.loadbalancer.server.port=8000
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME:-postgres}
+      - POSTGRES_USER=${DATABASE_USER:-postgres}
+      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
