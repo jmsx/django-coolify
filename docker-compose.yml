@@ -9,11 +9,13 @@ services:
     environment:
       - DEBUG=${DEBUG:-False}
       - SECRET_KEY=${SERVICE_PASSWORD_SECRET_KEY}
-      - DATABASE_NAME=${DATABASE_NAME:-postgres}
-      - DATABASE_USER=${DATABASE_USER:-postgres}
+      # Configuración de la base de datos utilizando variables generadas automáticamente por Coolify
+      - DATABASE_NAME=${SERVICE_DB_NAME}
+      - DATABASE_USER=${SERVICE_USER_DB}
       - DATABASE_PASSWORD=${SERVICE_PASSWORD_DB}
-      - DATABASE_HOST=${DATABASE_HOST:-db}
-      - DATABASE_PORT=${DATABASE_PORT:-5432}
+      - DATABASE_HOST=${SERVICE_FQDN_DB}
+      - DATABASE_PORT=5432  # Puerto predeterminado de Postgres
+      # Genera un FQDN para el servicio web
       - SERVICE_FQDN_WEB=/
     volumes:
       - static_volume:/app/static
@@ -25,11 +27,13 @@ services:
       - traefik.http.services.web.loadbalancer.server.port=8000
 
   db:
-    image: postgres:13
+    image: postgres:16-alpine
     environment:
-      - POSTGRES_DB=${DATABASE_NAME:-postgres}
-      - POSTGRES_USER=${DATABASE_USER:-postgres}
+      # Configuración automática de la base de datos para la conexión del contenedor de PostgreSQL
+      - POSTGRES_DB=${SERVICE_DB_NAME}
+      - POSTGRES_USER=${SERVICE_USER_DB}
       - POSTGRES_PASSWORD=${SERVICE_PASSWORD_DB}
+      - SERVICE_FQDN_DB=/  # Genera un FQDN para el servicio de base de datos
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
