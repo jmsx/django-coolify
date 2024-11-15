@@ -9,9 +9,9 @@ services:
     environment:
       - DEBUG=${DEBUG:-False}
       # Configuración de la base de datos utilizando variables generadas automáticamente por Coolify
-      - DATABASE_NAME=$SERVICE_BASE64_DBNAME
-      - DATABASE_USER=$SERVICE_BASE64_DBUSER
-      - DATABASE_PASSWORD=$SERVICE_PASSWORD_DBPASS
+      - DATABASE_NAME=${SERVICE_BASE64_DBNAME}
+      - DATABASE_USER=${SERVICE_BASE64_DBUSER}
+      - DATABASE_PASSWORD=${SERVICE_PASSWORD_DBPASS}
       - DATABASE_HOST=db
       - DATABASE_PORT=5432  # Puerto predeterminado de Postgres
       # Genera un FQDN para el servicio web
@@ -29,9 +29,9 @@ services:
     image: postgres:16-alpine
     environment:
       # Configuración automática de la base de datos para la conexión del contenedor de PostgreSQL
-      - POSTGRES_DB=$SERVICE_BASE64_DBNAME
-      - POSTGRES_USER=$SERVICE_BASE64_DBUSER
-      - POSTGRES_PASSWORD=$SERVICE_PASSWORD_DBPASS
+      - POSTGRES_DB=${SERVICE_BASE64_DBNAME}
+      - POSTGRES_USER=${SERVICE_BASE64_DBUSER}
+      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_DBPASS}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
